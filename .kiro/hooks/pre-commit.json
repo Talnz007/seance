@@ -1,0 +1,69 @@
+// ==================================================
+// .kiro/hooks/pre-commit.json
+// ==================================================
+
+{
+  "name": "Pre-commit Quality Checks",
+  "description": "Run code quality checks before committing",
+  "trigger": "pre_commit",
+  "enabled": true,
+  "actions": [
+    {
+      "name": "Format Python Code",
+      "command": "black",
+      "args": ["backend/"],
+      "workingDirectory": ".",
+      "continueOnError": false
+    },
+    {
+      "name": "Lint Python Code",
+      "command": "ruff",
+      "args": ["check", "backend/"],
+      "workingDirectory": ".",
+      "continueOnError": false
+    },
+    {
+      "name": "Type Check Python",
+      "command": "mypy",
+      "args": ["backend/app"],
+      "workingDirectory": ".",
+      "continueOnError": true
+    },
+    {
+      "name": "Format TypeScript",
+      "command": "npm",
+      "args": ["run", "format", "--", "--check"],
+      "workingDirectory": "frontend",
+      "continueOnError": false
+    },
+    {
+      "name": "Lint TypeScript",
+      "command": "npm",
+      "args": ["run", "lint"],
+      "workingDirectory": "frontend",
+      "continueOnError": false
+    },
+    {
+      "name": "Run Backend Tests",
+      "command": "pytest",
+      "args": ["tests/", "-v", "--tb=short"],
+      "workingDirectory": "backend",
+      "continueOnError": true
+    },
+    {
+      "name": "Verify .kiro Directory",
+      "description": "Ensure .kiro directory is NOT in .gitignore (required for hackathon)",
+      "command": "bash",
+      "args": [
+        "-c",
+        "if grep -q '^\\.kiro' .gitignore; then echo 'ERROR: .kiro is in .gitignore! Remove it for hackathon submission.'; exit 1; else echo '.kiro directory is correctly tracked'; fi"
+      ],
+      "workingDirectory": ".",
+      "continueOnError": false
+    }
+  ],
+  "notifications": {
+    "onSuccess": "✅ Pre-commit checks passed!",
+    "onFailure": "❌ Pre-commit checks failed. Please fix errors before committing."
+  }
+}

@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-text;
+  }
+  
+  /* Improve touch interactions on mobile */
+  html {
+    -webkit-tap-highlight-color: rgba(168, 85, 247, 0.2);
+    -webkit-touch-callout: none;
+  }
+  
+  /* Smooth scrolling for better UX */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Prevent text selection on interactive elements */
+  button, [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  /* Enhanced focus indicators for accessibility */
+  *:focus-visible {
+    outline: 2px solid #a855f7;
+    outline-offset: 2px;
+  }
+  
+  /* Ensure focus is visible on all interactive elements */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid #a855f7;
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+  }
+  
+  .text-glow-green {
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  }
+  
+  /* Screen reader only - visually hidden but accessible */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
+  /* Custom scrollbar styles */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(168, 85, 247, 0.3) rgba(15, 23, 42, 0.5);
+  }
+  
+  /* Smooth momentum scrolling on iOS */
+  .overflow-scroll-touch {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent overscroll bounce on mobile */
+  .overscroll-none {
+    overscroll-behavior: none;
+  }
+  
+  /* Better word breaking for long text */
+  .overflow-wrap-anywhere {
+    overflow-wrap: anywhere;
+  }
+}

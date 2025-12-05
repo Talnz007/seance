@@ -1,0 +1,57 @@
+// ==================================================
+// .kiro/hooks/test-runner.json
+// ==================================================
+
+{
+  "name": "Automated Test Runner",
+  "description": "Run tests when test files or source files are modified",
+  "trigger": "file_change",
+  "enabled": true,
+  "filePatterns": [
+    "backend/app/**/*.py",
+    "backend/tests/**/*.py",
+    "frontend/components/**/*.tsx",
+    "frontend/__tests__/**/*.test.tsx"
+  ],
+  "actions": [
+    {
+      "name": "Run Related Backend Tests",
+      "filePattern": "backend/**/*.py",
+      "command": "pytest",
+      "args": [
+        "tests/",
+        "-v",
+        "--tb=short",
+        "--cov=app",
+        "--cov-report=term-missing:skip-covered"
+      ],
+      "workingDirectory": "backend",
+      "runInBackground": true,
+      "timeout": 30000
+    },
+    {
+      "name": "Run Frontend Component Tests",
+      "filePattern": "frontend/components/**/*.tsx",
+      "command": "npm",
+      "args": ["run", "test", "--", "--watchAll=false"],
+      "workingDirectory": "frontend",
+      "runInBackground": true,
+      "timeout": 30000
+    },
+    {
+      "name": "Run Changed Test File",
+      "filePattern": "**/*.test.{ts,tsx}",
+      "command": "npm",
+      "args": ["run", "test", "--", "{{filePath}}", "--watchAll=false"],
+      "workingDirectory": "frontend",
+      "runInBackground": false,
+      "timeout": 15000
+    }
+  ],
+  "debounceMs": 2000,
+  "notifications": {
+    "onSuccess": "✅ Tests passed",
+    "onFailure": "❌ Tests failed - check output",
+    "showProgress": true
+  }
+}

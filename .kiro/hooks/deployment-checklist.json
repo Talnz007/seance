@@ -1,0 +1,57 @@
+// ==================================================
+// .kiro/hooks/deployment-checklist.json
+// ==================================================
+
+{
+  "name": "Deployment Checklist",
+  "description": "Run checks before deploying to production",
+  "trigger": "manual",
+  "enabled": true,
+  "actions": [
+    {
+      "name": "Check Environment Variables",
+      "command": "bash",
+      "args": [
+        "-c",
+        "echo 'Checking required env vars...' && [ -n \"$DATABASE_URL\" ] && [ -n \"$REDIS_URL\" ] && [ -n \"$KIRO_API_KEY\" ] && echo '✅ All required env vars set'"
+      ],
+      "continueOnError": false
+    },
+    {
+      "name": "Run Full Test Suite",
+      "command": "bash",
+      "args": [
+        "-c",
+        "cd backend && pytest tests/ -v && cd ../frontend && npm run test:ci"
+      ],
+      "continueOnError": false
+    },
+    {
+      "name": "Build Frontend",
+      "command": "npm",
+      "args": ["run", "build"],
+      "workingDirectory": "frontend",
+      "continueOnError": false
+    },
+    {
+      "name": "Verify Docker Images",
+      "command": "docker-compose",
+      "args": ["build", "--no-cache"],
+      "continueOnError": false
+    },
+    {
+      "name": "Check .kiro Directory",
+      "description": "Verify .kiro directory is committed (hackathon requirement)",
+      "command": "bash",
+      "args": [
+        "-c",
+        "git ls-files .kiro/ | grep -q . && echo '✅ .kiro directory is committed' || (echo '❌ .kiro directory not tracked!' && exit 1)"
+      ],
+      "continueOnError": false
+    }
+  ],
+  "notifications": {
+    "onSuccess": "🚀 Deployment checks passed! Ready to deploy.",
+    "onFailure": "❌ Deployment checks failed. Fix issues before deploying."
+  }
+}

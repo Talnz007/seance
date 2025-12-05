@@ -1,0 +1,55 @@
+// ==================================================
+// .kiro/hooks/on-file-save.json
+// ==================================================
+
+{
+  "name": "Auto-format on Save",
+  "description": "Automatically format code when files are saved",
+  "trigger": "file_save",
+  "enabled": true,
+  "filePatterns": [
+    "**/*.py",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.json"
+  ],
+  "actions": [
+    {
+      "name": "Format Python File",
+      "filePattern": "**/*.py",
+      "command": "black",
+      "args": ["{{filePath}}"],
+      "workingDirectory": ".",
+      "runInBackground": true
+    },
+    {
+      "name": "Organize Python Imports",
+      "filePattern": "**/*.py",
+      "command": "isort",
+      "args": ["{{filePath}}"],
+      "workingDirectory": ".",
+      "runInBackground": true
+    },
+    {
+      "name": "Format TypeScript File",
+      "filePattern": "**/*.{ts,tsx}",
+      "command": "prettier",
+      "args": ["--write", "{{filePath}}"],
+      "workingDirectory": "frontend",
+      "runInBackground": true
+    },
+    {
+      "name": "Format JSON File",
+      "filePattern": "**/*.json",
+      "command": "prettier",
+      "args": ["--write", "{{filePath}}"],
+      "workingDirectory": ".",
+      "runInBackground": true
+    }
+  ],
+  "debounceMs": 500,
+  "notifications": {
+    "showProgress": false,
+    "onError": "⚠️ Auto-format failed for {{fileName}}"
+  }
+}

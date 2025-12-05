@@ -1,0 +1,31 @@
+// ==================================================
+// .kiro/hooks/spirit-response-filter.json
+// ==================================================
+
+{
+  "name": "Spirit Response Filter",
+  "description": "Filter and validate spirit responses from Kiro API",
+  "trigger": "api_response",
+  "enabled": true,
+  "scope": "kiro_api",
+  "actions": [
+    {
+      "name": "Enforce Word Limit",
+      "description": "Ensure spirit responses are max 30 words",
+      "type": "transform",
+      "script": "function filterResponse(response) {\n  const words = response.text.split(/\\s+/);\n  if (words.length > 30) {\n    // Truncate mysteriously\n    const truncated = words.slice(0, 27).join(' ');\n    return { ...response, text: truncated + '... the veil closes' };\n  }\n  return response;\n}"
+    },
+    {
+      "name": "Add Letter Timing",
+      "description": "Add timing metadata for letter-by-letter reveal",
+      "type": "transform",
+      "script": "function addTimings(response) {\n  const text = response.text;\n  const timings = text.split('').map((char) => {\n    if (char === ' ') return 100;\n    if (char === '.' || char === '!' || char === '?') return 400;\n    if (char === ',') return 200;\n    return 150 + Math.random() * 100; // 150-250ms per letter\n  });\n  return { ...response, letterTimings: timings };\n}"
+    },
+    {
+      "name": "Safety Check",
+      "description": "Filter inappropriate content",
+      "type": "validate",
+      "script": "function validateSafety(response) {\n  const bannedPhrases = ['[REDACTED FOR BREVITY]'];\n  const text = response.text.toLowerCase();\n  for (const phrase of bannedPhrases) {\n    if (text.includes(phrase)) {\n      return { valid: false, replacement: 'The spirits do not speak of such things.' };\n    }\n  }\n  return { valid: true };\n}"
+    }
+  ]
+}

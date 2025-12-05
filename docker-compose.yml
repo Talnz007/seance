@@ -1,0 +1,101 @@
+# Séance - Docker Compose Configuration
+# Local development environment with backend, database, and Redis
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: seance-postgres
+    environment:
+      POSTGRES_USER: seance
+      POSTGRES_PASSWORD: seance_dev_password
+      POSTGRES_DB: seance
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seance"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - seance-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: seance-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - seance-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: seance-backend
+    environment:
+      # Database
+      DATABASE_URL: postgresql+asyncpg://seance:seance_dev_password@postgres:5432/seance
+      
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+      
+      # Security
+      JWT_SECRET: dev-secret-key-change-in-production-min-32-chars
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      
+      # CORS
+      CORS_ORIGINS: '["http://localhost:3000", "http://localhost:3001"]'
+      
+      # Environment
+      ENVIRONMENT: development
+      LOG_LEVEL: info
+      
+      # AI Keys (add your own)
+      KIRO_API_KEY: ${KIRO_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/__pycache__
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - seance-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  seance-network:
+    driver: bridge
