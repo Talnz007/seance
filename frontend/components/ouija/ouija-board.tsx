@@ -79,7 +79,8 @@ export const OuijaBoard = memo<OuijaBoardProps>(({
 
     // Audio triggers
     soundManager.spiritArrives();
-    webSpeechTTS.speak(latestSpiritMessage.message).catch(console.error);
+    // TTS disabled - Edge TTS not reliable on cloud hosting
+    // webSpeechTTS.speak(latestSpiritMessage.message).catch(console.error);
 
   }, [latestSpiritMessage, isRevealing, currentMessage, isAnimating]);
 
