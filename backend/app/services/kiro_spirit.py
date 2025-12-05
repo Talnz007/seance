@@ -56,7 +56,7 @@ class SpiritService:
         # Configure Google GenAI Client
         if settings.GOOGLE_API_KEY:
             self.client = genai.Client(api_key=settings.GOOGLE_API_KEY)
-            self.model_name = settings.GEMINI_MODEL or "gemini-1.5-flash"
+            self.model_name = settings.GEMINI_MODEL or "gemini-2.0-flash"
         else:
             self.client = None
             self.model_name = None

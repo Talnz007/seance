@@ -77,8 +77,8 @@ class Settings(BaseSettings):
         description="Google Generative AI API key (primary AI provider - FREE)"
     )
     GEMINI_MODEL: str = Field(
-        default="gemini-1.5-flash",
-        description="Google Gemini model to use (gemini-1.5-flash or gemini-1.5-pro)"
+        default="gemini-2.0-flash",
+        description="Google Gemini model to use (gemini-2.0-flash)"
     )
     ELEVENLABS_API_KEY: str | None = Field(
         default=None,
