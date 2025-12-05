@@ -15,6 +15,7 @@ from app.config import settings
 
 
 # Create async engine with connection pooling
+# Note: statement_cache_size=0 required for Supabase PgBouncer
 engine = create_async_engine(
     settings.DATABASE_URL,
     pool_size=settings.DB_POOL_SIZE,
@@ -22,6 +23,10 @@ engine = create_async_engine(
     pool_pre_ping=settings.DB_POOL_PRE_PING,
     echo=settings.DB_ECHO,
     future=True,
+    connect_args={
+        "prepared_statement_cache_size": 0,
+        "statement_cache_size": 0,
+    },
 )
 
 # Create async session factory
