@@ -17,7 +17,8 @@ from sqlalchemy import text
 
 from app.config import settings
 from app.api import sessions, websocket
-from app.api.endpoints import tts
+# TTS disabled - Edge TTS not reliable on cloud hosting
+# from app.api.endpoints import tts
 from app.db.session import engine
 from app.utils.logger import get_logger, log_api_error
 
@@ -62,7 +63,8 @@ app.add_middleware(
 # Include routers
 app.include_router(sessions.router)
 app.include_router(websocket.router)
-app.include_router(tts.router, prefix="/api/tts", tags=["tts"])
+# TTS disabled
+# app.include_router(tts.router, prefix="/api/tts", tags=["tts"])
 
 
 # Exception handlers
